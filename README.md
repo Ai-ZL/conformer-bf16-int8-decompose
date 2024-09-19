@@ -22,7 +22,7 @@ with open('tokens.txt', 'w') as f:
 ```
 
 # File organization
-```python
+```
 ├── Readme.md                          # help
 ├── test_inference.py                  # test model inference
 ├── test_eval.py                       # evaluate the model
