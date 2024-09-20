@@ -24,6 +24,7 @@ with open('tokens.txt', 'w') as f:
 # File organization
 ```
 ├── Readme.md                          # help
+├── tokens.txt                         # tokens for model
 ├── test_inference.py                  # test model inference
 ├── test_eval.py                       # evaluate the model
 ├── optimize_model.py                  # optimize the model
