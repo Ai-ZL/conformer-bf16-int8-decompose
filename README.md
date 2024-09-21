@@ -26,6 +26,12 @@ with open('tokens.txt', 'w') as f:
 python ./test_inference.py -model ./model.onnx -data ./test_wavs_0.wav -t ./tokens.txt
 ```
 
+# Evaluation test
+```
+python ./test_eval.py -model ./model.onnx -t ./tokens.txt
+```
+Now the evaluation dataset can be librispeech_asr-clean-test or librispeech_asr-other-test. You can change the evaluation dataset by changing **load_dataset()** second parameter from "clean" to "other".
+
 # File organization
 ```
 ├── Readme.md                          # help
