@@ -21,6 +21,11 @@ with open('tokens.txt', 'w') as f:
   f.write(f"<blk> {i+1}\n")
 ```
 
+# Inference test
+```
+python ./test_inference.py -model ./model.onnx -data ./test_wavs_0.wav -t ./tokens.txt
+```
+
 # File organization
 ```
 ├── Readme.md                          # help
