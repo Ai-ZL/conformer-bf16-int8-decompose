@@ -40,7 +40,7 @@ Now the evaluation dataset can be librispeech_asr-clean-test or librispeech_asr-
 ├── test_eval.py                       # evaluate the model
 ├── optimize_model.py                  # optimize the model
 ├── quantize_model.py                  # quantize the model
-├── design
+├── design                             # modify model graph detail to meet requirement
 ├── model
-├── data
+├── data                               # test wav data
 ```
