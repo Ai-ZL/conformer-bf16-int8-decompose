@@ -42,6 +42,7 @@ Now the evaluation dataset can be librispeech_asr-clean-test or librispeech_asr-
 ├── optimize_model.py                  # optimize the model
 ├── quantize_model.py                  # quantize the model
 ├── design                             # modify model graph detail to meet requirement
+│     ├── decompose_function.py        # decompose non-linear function
 ├── model
 ├── data                               # test wav data
 ```
