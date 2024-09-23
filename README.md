@@ -4,10 +4,11 @@ In order to make the model conform to a specific architecture for the FPGA imple
 The original model is [STT En Conformer-CTC Small](https://catalog.ngc.nvidia.com/orgs/nvidia/teams/nemo/models/stt_en_conformer_ctc_small_ls) from NVIDIA NeMo.
 
 # Step
-1. Optimize the model
-2. Quantize the model to compute the nonlinear function with fp32 data and the rest with int8.
-3. Change fp32 to bf16
-4. decompose the nonlinear function
+1. Decompose all softmax function
+2. Optimize the model
+3. Quantize the model to compute the nonlinear function with fp32 data and the rest with int8.
+4. Decompose sigmoid and exp function
+5. Change fp32 to bf16
 
 # Download model and tokens
 ```python
