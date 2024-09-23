@@ -1,4 +1,4 @@
-# Decompose the fucntion
+# Decompose the function
 ```
 python .decompose_function.py -model model.onnx -model_o model_o.onnx -m sigmoid
 ```
