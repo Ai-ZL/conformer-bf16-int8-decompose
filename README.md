@@ -33,6 +33,16 @@ python ./test_eval.py -model ./model.onnx -t ./tokens.txt
 ```
 Now the evaluation dataset can be librispeech_asr-clean-test or librispeech_asr-other-test. You can change the evaluation dataset by changing **load_dataset()** second parameter from "clean" to "other".
 
+# Analysis of Results
+| Processing steps                                                        | Average WER(%) | Number of samples WER > 0.5 |
+| :---------------------------------------------------------------------- | :------------: | :--------------------------:|
+| Original model                                                          | 4.729          | 13                          |
+| Quantized model                                                         | 8.972          | 24                          |
+| Quantized model + non-linear function decomposition                     | 8.972          | 24                          |
+| Quantized model + non-linear function decomposition + cast to bf16_fp16 | 8.975          | 34                          |
+
+Above table is the best performance by using post-training static quantization.
+
 # File organization
 ```
 ├── Readme.md                          # help
