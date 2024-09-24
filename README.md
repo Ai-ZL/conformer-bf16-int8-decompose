@@ -44,6 +44,7 @@ Now the evaluation dataset can be librispeech_asr-clean-test or librispeech_asr-
 ├── design                             # modify model graph detail to meet requirement
 │     ├── Readme.md                    # help for design folder
 │     ├── decompose_function.py        # decompose non-linear function
+│     ├── convert_to_bfp16.py          # convert model non-linear function calculation datatype
 ├── model
 ├── data                               # test wav data
 ```
