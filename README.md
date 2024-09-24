@@ -46,5 +46,8 @@ Now the evaluation dataset can be librispeech_asr-clean-test or librispeech_asr-
 │     ├── decompose_function.py        # decompose non-linear function
 │     ├── convert_to_bfp16.py          # convert model non-linear function calculation datatype
 ├── model
+│     ├── Readme.md                    # help for model
+│     ├── model_inf.onnx               # model for inference and evaluation test
+│     ├── model_final.onnx             # model final processed version
 ├── data                               # test wav data
 ```
