@@ -1,1 +1,11 @@
-
+# Model Description
+- *model_inf.onnx* is for inference test and evaluation test. It has:
+    - [x] Optimization
+    - [x] Qunatization
+    - [x] All non-linear function decomposition
+    - [x] Datatype is converted to bfloat16 except **Pow**, **ReduceMax**, **log** ( [onnxruntime](https://github.com/microsoft/onnxruntime/blob/main/docs/OperatorKernels.md#cudaexecutionprovider) do not have implementation )
+- *model_final.onnx* is final processed version. It has:
+    - [x] Optimization
+    - [x] Qunatization
+    - [x] All non-linear function decomposition
+    - [x] Datatype is converted to bfloat16
