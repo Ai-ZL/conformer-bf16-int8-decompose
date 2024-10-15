@@ -4,15 +4,16 @@ import numpy as np
 
 
 
-onnx_model = onnx.load('model_I8I8_qops_static_symw+a2_4.onnx ')
+onnx_model = onnx.load('model_I8I8_qops_static_symw+a2_4.onnx ') # load model
 
-graph = onnx_model.graph
-node = graph.node
+graph = onnx_model.graph # onnx model graph
+node = graph.node # onnx model node
 
 
-all_initializer = onnx_model.graph.initializer
-all_value_info = onnx_model.graph.value_info
+all_initializer = onnx_model.graph.initializer # onnx model initializer
+all_value_info = onnx_model.graph.value_info # onnx model value_info
 
+#check input onnx model is valid of not
 try:
     onnx.checker.check_model(onnx_model)
 except onnx.checker.ValidationError as e:
@@ -21,9 +22,9 @@ else:
     print('The model is valid!')
 
 
-print("original version ",onnx_model.opset_import)
+print("original version ",onnx_model.opset_import) # check onnx model opset version
 
-mode='bf16'
+mode='bf16' # change mode here
 
 if mode =='bf16':#convert model to full bfloat16
     ##################################change model initializer###################################
