@@ -1,3 +1,4 @@
+###############################################evaluate whole dataset##############################################
 import numpy as np
 import kaldi_native_fbank as knf
 import itertools
@@ -6,11 +7,12 @@ from datasets import load_dataset
 from evaluate import load
 import argparse
 
+#Arguments for running py files
 parser = argparse.ArgumentParser()
 parser.add_argument('-model', '--model_path', help='model stored path')
 parser.add_argument('-t', '--tokens_path', help='tokens list stored path')
 
-def compute_feat(samples,sample_rate):
+def compute_feat(samples,sample_rate):#same as inference file, transform into spectrogram
     opts = knf.FbankOptions()
     opts.frame_opts.dither = 0
     opts.frame_opts.snip_edges = False
@@ -31,7 +33,7 @@ def compute_feat(samples,sample_rate):
     features = (features - mean) / (stddev + 1e-5)
     return features
 
-def load_tokens(args):
+def load_tokens(args):# same as inference file, load token file
     ans = dict()
     with open(args.tokens_path, encoding="utf-8") as f:
         for line in f:
@@ -40,42 +42,43 @@ def load_tokens(args):
     return ans
 
 def main(args):
-    librispeech_eval = load_dataset("openslr/librispeech_asr", "clean", split="test",trust_remote_code=True)# change to "other" for other test dataset
-    wer = load("wer")
+    librispeech_eval = load_dataset("openslr/librispeech_asr", "clean", split="test",trust_remote_code=True) # change to "other" for other test dataset, download or load dataset
+    wer = load("wer") #WER assess matric
 
-    sess = ort.InferenceSession(args.model_path,providers=['CUDAExecutionProvider'])
+    sess = ort.InferenceSession(args.model_path,providers=['CUDAExecutionProvider']) #use GPU CUDA for inference
 
-    WER_s=0
-    larger_s=0
-    larger_s_list=[]
-    larger_s_wer_list=[]
-    for i in range(len(librispeech_eval)):
+    WER_s=0 # the sum of WER
+    larger_s=0 # the number of samples whose WER is larger than 0.5
+    larger_s_list=[] # the list of index of samples whose WER is larger than 0.5
+    larger_s_wer_list=[] # the list of WER score of samples whose WER is larger than 0.5
+    for i in range(len(librispeech_eval)): # go through all the samples
         features = compute_feat(librispeech_eval[i]['audio']['array'],
-                            librispeech_eval[i]['audio']['sampling_rate'])  # (T, C)
-        features = np.expand_dims(features, axis=0)  # (N, T, C)
-        features = features.transpose(0, 2, 1)  # (N, C, T)
+                            librispeech_eval[i]['audio']['sampling_rate'])  # load audio waveform and sampling rate in dataset to compute spectrogram
+        features = np.expand_dims(features, axis=0)  #(number of samples, frame number, number of filter banks)
+        features = features.transpose(0, 2, 1)  #(number of samples, number of filter banks, frame number)
         features_length = np.array([features.shape[2]], dtype=np.int64)
         inputs = {
             sess.get_inputs()[0].name: features,
             sess.get_inputs()[1].name: features_length,
         }
 
-        outputs = sess.run([sess.get_outputs()[0].name], input_feed=inputs)
+        outputs = sess.run([sess.get_outputs()[0].name], input_feed=inputs) #do inference and get output
 
         indexes = outputs[0].argmax(axis=-1)
         indexes = indexes.squeeze().tolist()
         unique_indexes = [k for k, _ in itertools.groupby(indexes)]
 
         tokens = load_tokens(args)
-        text = "".join([tokens[i] for i in unique_indexes if i != 1024])
-        text = text.replace("▁", " ");
+        text = "".join([tokens[i] for i in unique_indexes if i != 1024]) #get recognition text result
+        #do some processing to align with dataset text label
+        text = text.replace("▁", " "); # word spacing changed from "_" to " "
         text = text[1:]
-        text = text.upper()
-        print(text)
-        print(librispeech_eval[i]['text'])
+        text = text.upper() #Change upper case to lower case
+        print(text) #text recognition result after modification
+        print(librispeech_eval[i]['text']) #dataset text label
         predictions = [text]
         references = [librispeech_eval[i]['text']]
-        wer_score = wer.compute(predictions=predictions, references=references)
+        wer_score = wer.compute(predictions=predictions, references=references) # compute WER score
         print(wer_score)
         WER_s+=wer_score
 
