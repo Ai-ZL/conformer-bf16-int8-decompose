@@ -6,7 +6,7 @@ from onnxruntime.quantization import QuantType, quantize_static, CalibrationData
 from datasets import load_dataset
 
 
-def compute_feat(samples,sample_rate):
+def compute_feat(samples,sample_rate): #same as ealuation, compute spectrogram
     opts = knf.FbankOptions()
     opts.frame_opts.dither = 0
     opts.frame_opts.snip_edges = False
@@ -28,27 +28,23 @@ def compute_feat(samples,sample_rate):
     return features
 
 
-class ConformerDataReader(CalibrationDataReader):
+class ConformerDataReader(CalibrationDataReader): # for static quantization, calibration dataset
     def __init__(self):
 
         self.enum_data_dicts = []
         self.datasize = 0
         librispeech_eval = load_dataset("openslr/librispeech_asr", "clean",
-                                        split="test",trust_remote_code=True)  # change to "other" for other test dataset
+                                        split="test",trust_remote_code=True)  # change to "other" for other test dataset, load or download dataset
 
-        Features=[]
-        for i in [583, 687, 739, 330, 447, 700, 1046, 1065,1071, 1085, 1328, 1362,1516,  1578,1703, 1731, 1938, 2213,2285, 2600,2605,2606,2607,2609,2610,2611,2612,2613,2615]:#audio sample whose WER larger than 0.5
+        # store all calibration dataset feature (spectrogram)
+        for i in [583, 687, 739, 330, 447, 700, 1046, 1065,1071, 1085, 1328, 1362,1516,  1578,1703, 1731, 1938, 2213,2285, 2600,2605,2606,2607,2609,2610,2611,2612,2613,2615]:#audio sample whose WER larger than 0.5 for calibration
             features = compute_feat(librispeech_eval[i]['audio']['array'],
                                         librispeech_eval[i]['audio']['sampling_rate'])  # (T, C)
-            features = np.expand_dims(features, axis=0)  # (N, T, C)
-            features = features.transpose(0, 2, 1)  # (N, C, T)
-            if i==583:
-                Features=features
-            else:
-                Features=np.append(Features,features,axis=2)
-        print(Features.shape)
-        features_length = np.array([features.shape[2]], dtype=np.int64)
-        self.enum_data_dicts.append({"audio_signal": features, "length": features_length})
+            features = np.expand_dims(features, axis=0) 
+            features = features.transpose(0, 2, 1) 
+            features_length = np.array([features.shape[2]], dtype=np.int64)
+            self.enum_data_dicts.append({"audio_signal": features, "length": features_length})
+
         self.datasize = len(self.enum_data_dicts)
         self.enum_data_dicts = iter(self.enum_data_dicts)
 
@@ -86,7 +82,7 @@ def main():
                           '/layers.12/feed_forward2/activation/Sigmoid','/layers.13/feed_forward1/activation/Sigmoid','/layers.13/conv/Sigmoid','/layers.13/conv/activation/Sigmoid',
                           '/layers.13/feed_forward2/activation/Sigmoid','/layers.14/feed_forward1/activation/Sigmoid','/layers.14/conv/Sigmoid','/layers.14/conv/activation/Sigmoid',
                           '/layers.14/feed_forward2/activation/Sigmoid','/layers.15/feed_forward1/activation/Sigmoid','/layers.15/conv/Sigmoid','/layers.15/conv/activation/Sigmoid',
-                          '/layers.15/feed_forward2/activation/Sigmoid'],
+                          '/layers.15/feed_forward2/activation/Sigmoid'],#do not quantize sigmoid function, it will report error, later will decompose it.
         calibrate_method=CalibrationMethod.Entropy,
         extra_options=q_static_opts
     )
